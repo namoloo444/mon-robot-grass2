@@ -1,9 +1,9 @@
 name: Grass_Ultra_Proxy_V1
 
 on:
-  workflow_dispatch: # Pour lancer manuellement
+  workflow_dispatch:
   schedule:
-    - cron: '0 */6 * * *' # Se relance toutes les 6 heures
+    - cron: '0 */6 * * *'
 
 jobs:
   run-grass:
@@ -14,17 +14,21 @@ jobs:
 
       - name: Installer Cloudflare WARP
         run: |
-          # Ajout de /pubkey.gpg et de l'URL précise pour le dépôt
+          # Installation propre de Cloudflare WARP
           curl -fsSL https://pkg.cloudflareclient.com | sudo gpg --yes --dearmor --output /usr/share/keyrings/cloudflare-warp-archive-keyring.gpg
           echo "deb [arch=amd64 signed-by=/usr/share/keyrings/cloudflare-warp-archive-keyring.gpg] https://pkg.cloudflareclient.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/cloudflare-client.list
           sudo apt-get update && sudo apt-get install cloudflare-warp -y
           
-          # Configuration du proxy sur le port 40001
+          # Démarrage forcé du service
+          sudo systemctl enable --now warp-svc
+          sleep 5
+          
+          # Configuration
           sudo warp-cli --accept-tos registration new
           sudo warp-cli --accept-tos mode proxy
           sudo warp-cli --accept-tos proxy port 40001
           sudo warp-cli --accept-tos connect
-          sleep 15
+          sleep 10
 
       - name: Setup Python
         uses: actions/setup-python@v4
