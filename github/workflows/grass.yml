@@ -1,24 +1,25 @@
-name: Grass_Direct_No_Proxy
+name: Grass_Earning_Bot
 
 on:
-  workflow_dispatch:
+  workflow_dispatch: # Permet de le lancer manuellement
   schedule:
-    - cron: '0 */4 * * *'
+    - cron: '0 */4 * * *' # Relance automatique toutes les 4 heures
 
 jobs:
   run-grass:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Setup Python
-        uses: actions/setup-python@v4
+      - name: Configuration Python
+        uses: actions/setup-python@v5
         with:
           python-version: '3.10'
 
-      - name: Installer Dépendances
+      - name: Installation des librairies
         run: pip install websockets==10.4
 
-      - name: Lancer le Bot
+      - name: Execution du Bot Grass
+        # Cette étape va faire tourner ton script grass_bot.py
         run: python grass_bot.py
