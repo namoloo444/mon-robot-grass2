@@ -27,7 +27,8 @@ jobs:
           python-version: '3.10'
 
       - name: Installer Dépendances
-        run: pip install websockets python-socks
+        run: pip install websockets==10.4 python-socks[asyncio]
+        
 
       - name: Lancer le Bot Grass Indétectable
         run: python grass_bot.py
