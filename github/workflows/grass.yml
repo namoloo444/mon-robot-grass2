@@ -1,7 +1,8 @@
 name: Grass_Ultra_Proxy_V3
+
 on:
   schedule:
-    - cron: '0 */4 * * *' # Relance toutes les 4h pour éviter les blocages GitHub
+    - cron: '0 */4 * * *'
   workflow_dispatch:
 
 jobs:
@@ -11,15 +12,23 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Installer Cloudflare WARP (Proxy Indétectable)
+      - name: Installer Cloudflare WARP
         run: |
-          curl -fsSL https://pkg.cloudflareclient.com/pubkey.gpg | sudo gpg --yes --dearmor --output /usr/share/keyrings/cloudflare-warp-archive-keyring.gpg
-          echo "deb [signed-by=/usr/share/keyrings/cloudflare-warp-archive-keyring.gpg] https://pkg.cloudflareclient.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/cloudflare-client.list
+          # Installation avec les bonnes clés
+          curl -fsSL https://pkg.cloudflareclient.com | sudo gpg --yes --dearmor --output /usr/share/keyrings/cloudflare-warp-archive-keyring.gpg
+          echo "deb [arch=amd64 signed-by=/usr/share/keyrings/cloudflare-warp-archive-keyring.gpg] https://pkg.cloudflareclient.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/cloudflare-client.list
           sudo apt-get update && sudo apt-get install cloudflare-warp -y
-          warp-cli --accept-tos registration new
-          warp-cli --accept-tos mode proxy
-          warp-cli --accept-tos connect
-          sleep 5 # Attente de connexion au réseau Cloudflare
+          
+          # ACTIVATION DU SERVICE (Étape manquante qui cause l'échec)
+          sudo systemctl start warp-svc
+          sleep 5
+          
+          # CONFIGURATION AVEC SUDO (Obligatoire sur GitHub)
+          sudo warp-cli --accept-tos registration new
+          sudo warp-cli --accept-tos mode proxy
+          sudo warp-cli --accept-tos proxy port 40000
+          sudo warp-cli --accept-tos connect
+          sleep 10
 
       - name: Setup Python
         uses: actions/setup-python@v4
@@ -29,5 +38,5 @@ jobs:
       - name: Installer Dépendances
         run: pip install websockets==10.4 python-socks[asyncio]
 
-      - name: Lancer le Bot Grass Indétectable
+      - name: Lancer le Bot
         run: python grass_bot.py
