@@ -14,7 +14,7 @@ async def connect_to_grass():
 
     while True:
         try:
-            async with websockets.client.connect(
+            async with websockets.connect(
                 GRASS_WS_URL,
                 extra_headers={"User-Agent": user_agent}
             ) as ws:
