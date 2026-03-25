@@ -1,0 +1,34 @@
+name: Grass_Ultra_Proxy_V3
+on:
+  schedule:
+    - cron: '0 */4 * * *' # Relance toutes les 4h pour éviter les blocages GitHub
+  workflow_dispatch:
+
+jobs:
+  run-grass:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Installer Cloudflare WARP (Proxy Indétectable)
+        run: |
+          curl -fsSL https://pkg.cloudflareclient.com | sudo gpg --yes --dearmor --output /usr/share/keyrings/cloudflare-warp-archive-keyring.gpg
+          echo "deb [signed-by=/usr/share/keyrings/cloudflare-warp-archive-keyring.gpg] https://pkg.cloudflareclient.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/cloudflare-client.list
+          sudo apt-get update && sudo apt-get install cloudflare-warp -y
+          warp-cli --accept-tos registration new
+          warp-cli --accept-tos mode proxy
+          warp-cli --accept-tos connect
+          sleep 5 # Attente de connexion au réseau Cloudflare
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Installer Dépendances
+        run: pip install websockets python-socks
+
+      - name: Lancer le Bot Grass Indétectable
+        run: python grass_bot.py
+
