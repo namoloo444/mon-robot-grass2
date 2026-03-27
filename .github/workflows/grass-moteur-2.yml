@@ -1,0 +1,23 @@
+name: Grass_Moteur_2_Turbo
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '15 */2 * * *' # Décale de 15 min par rapport au premier robot
+
+jobs:
+  moteur-2:
+    runs-on: ubuntu-20.04 # Version 20.04 pour avoir une IP différente du premier
+    steps:
+      - name: Recupere le code
+        uses: actions/checkout@v4
+
+      - name: Installe Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Installe les outils
+        run: pip install websockets==10.4
+
+      - name: Lance le Robot 2
+        run: python grass_bot.py
