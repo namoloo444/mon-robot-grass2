@@ -1,0 +1,23 @@
+name: Grass_Moteur_3_Windows
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '45 */3 * * *' # On le décale pour ne pas être grillé par Grass
+
+jobs:
+  moteur-3:
+    runs-on: windows-latest # C'est ici le secret : une IP Windows USA différente !
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Configuration Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Installation Librairies
+        run: pip install websockets==10.4 requests
+
+      - name: Lancement du Moteur 3
+        run: python grass_bot.py # Il utilise ton fichier .py déjà existant
