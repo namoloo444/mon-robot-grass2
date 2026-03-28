@@ -1,12 +1,12 @@
-name: Grass_Moteur_3_Windows
+name: Grass_Moteur_3_Ubuntu_Force
 on:
   workflow_dispatch:
   schedule:
-    - cron: '45 */3 * * *' # On le décale pour ne pas être grillé par Grass
+    - cron: '45 */3 * * *'
 
 jobs:
   moteur-3:
-    runs-on: windows-latest # C'est ici le secret : une IP Windows USA différente !
+    runs-on: ubuntu-20.04 # On utilise la version 20.04 pour avoir une 3ème IP aux USA
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -20,4 +20,4 @@ jobs:
         run: pip install websockets==10.4 requests
 
       - name: Lancement du Moteur 3
-        run: python grass_bot.py # Il utilise ton fichier .py déjà existant
+        run: python grass_bot.py
